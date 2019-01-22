@@ -1,0 +1,55 @@
+const fs = require("fs");
+const sistem = JSON.parse(fs.readFileSync("./level.json", "utf8"));
+
+client.on("message", message => {
+
+ if (message.author.bot === true) return;
+  
+if (!sistem[message.author.id]) {
+ sistem[message.author.id] = {
+   xp: 0,
+   level: 0
+  }
+}
+
+sistem[message.author.id] = {
+   xp: sistem[message.author.id].xp || 0 + 1,
+   level: 0
+  }
+
+   fs.writeFile("./level.json", JSON.stringify(sistem), (err) => {
+      console.error(err)
+    })
+
+if (sistem[message.author.id].xp > 100) {
+  
+
+sistem[message.author.id] = {
+   xp: 0,
+   level: sistem[message.author.id].level + 1
+  }
+
+   fs.writeFile("./level.json", JSON.stringify(sistem), (err) => {
+      console.error(err)
+    })
+
+   message.channel.send(`<@${message.author.id}> başarıyla level atladın! \n**Yeni Levelin:** ${sistem[message.author.id].level || 0}`)
+
+  }
+
+let prefix = "!" //"!" yerine kendi botunuzun prefixini yazınız!
+
+if (message.content === prefix+"seviye" || message.content === prefix+"level") {
+
+let user = message.mentions.users.first() || message.author
+
+let embed = new Discord.RichEmbed()
+.setColor("RANDOM")
+.setAuthor(`${user.username} - Seviye Bilgisi`, user.avatarURL)
+.addField("Seviye", sistem[user.id].level || 0)
+.addField("XP", sistem[user.id].xp || 0 + "/100")
+message.channel.send(embed)
+
+}
+
+});
